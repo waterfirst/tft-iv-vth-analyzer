@@ -13,6 +13,10 @@ const assert = require('node:assert/strict');
   assert.match(await desktop.locator('#pointCount').textContent(), /16,200/);
   assert.equal(await desktop.locator('#resultsBody tr').count(), 200);
   assert.match(await desktop.locator('#meanVth').textContent(), /N .* · P .* V/);
+  assert.match(await desktop.locator('#ioffValue').textContent(), /e-\d+ A/);
+  await desktop.locator('#metricControl button[data-value="ioff"]').click();
+  await desktop.waitForFunction(() => document.querySelector('#distributionTitle')?.textContent === 'Ioff distribution');
+  await desktop.locator('#metricControl button[data-value="vth"]').click();
   await desktop.screenshot({ path: 'screenshots/desktop.png', fullPage: true });
 
   await desktop.locator('#typeControl button[data-value="pmos"]').click();

@@ -227,6 +227,28 @@ export function extractVth(curve, options = {}) {
   return { ok: true, vth: sign * (-fit.b / fit.m), r2: fit.r2, fitRange: [sign * selected[0].x, sign * selected.at(-1).x] };
 }
 
+export function extractIoff(curve, gateVoltage = 0) {
+  const targetVg = Number(gateVoltage);
+  if (!Number.isFinite(targetVg)) return { ok: false, reason: 'Ioff Vg 오류', current: null, vg: null };
+  const points = curve.rows
+    .map(row => ({ vg: Number(row.Vg), current: Math.max(Math.abs(Number(row.Id)), 1e-30) }))
+    .filter(point => Number.isFinite(point.vg) && Number.isFinite(point.current))
+    .sort((a, b) => a.vg - b.vg);
+  if (!points.length || targetVg < points[0].vg || targetVg > points.at(-1).vg) {
+    return { ok: false, reason: 'Ioff Vg 범위 밖', current: null, vg: targetVg };
+  }
+  const exact = points.find(point => Math.abs(point.vg - targetVg) < 1e-12);
+  if (exact) return { ok: true, current: exact.current, vg: targetVg };
+  for (let i = 1; i < points.length; i += 1) {
+    if (points[i - 1].vg <= targetVg && points[i].vg >= targetVg) {
+      const ratio = (targetVg - points[i - 1].vg) / (points[i].vg - points[i - 1].vg);
+      const logCurrent = Math.log10(points[i - 1].current) + ratio * (Math.log10(points[i].current) - Math.log10(points[i - 1].current));
+      return { ok: true, current: 10 ** logCurrent, vg: targetVg };
+    }
+  }
+  return { ok: false, reason: 'Ioff 보간 실패', current: null, vg: targetVg };
+}
+
 export function summarize(values) {
   const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
   if (!sorted.length) return { n: 0, mean: null, sigma: null, p5: null, median: null, p95: null };

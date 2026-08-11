@@ -11,6 +11,7 @@ colors:
   nmos-soft: "#d8f1f2"
   pmos-magenta: "#b63d72"
   pmos-soft: "#f9dce8"
+  ioff-amber: "#d77a16"
   pass-green: "#16724b"
   fail-red: "#b62932"
   action-cyan: "#63d8da"
@@ -130,6 +131,7 @@ The palette combines cool paper neutrals with a dark structural ink and two high
 ### Secondary
 - **PMOS Magenta:** PMOS curves and type identity; it remains analytic rather than decorative.
 - **Action Cyan:** High-emphasis import actions against ink-blue chrome.
+- **Ioff Amber:** Reserved for the selected curve's off-current point and annotation; never a third device category.
 
 ### Neutral
 - **Bench Paper:** Page canvas that separates white working surfaces without borders everywhere.

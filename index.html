@@ -87,6 +87,12 @@
           <small>소자 크기가 다르면 W/L 정규화를 사용하세요.</small>
         </div>
 
+        <div class="field">
+          <label for="offGateVoltage">Ioff 평가 Gate voltage</label>
+          <div class="input-unit"><input id="offGateVoltage" value="0" inputmode="decimal"><span>V</span></div>
+          <small>각 곡선의 지정 Vg에서 log|Id| 보간합니다.</small>
+        </div>
+
         <label class="check-row">
           <input id="normalizeGeometry" type="checkbox">
           <span><strong>W/L 정규화</strong><small>I<sub>criterion</sub> = I<sub>ref</sub> × W/L</small></span>
@@ -109,6 +115,7 @@
           <div><span>σ</span><strong id="sigmaVth">—</strong></div>
           <div><span>규격 내</span><strong id="yieldValue">—</strong></div>
           <div><span>추출 성공</span><strong id="fitRate">—</strong></div>
+          <div><span id="ioffMetricLabel">Ioff @ Vg=0 V</span><strong id="ioffValue">—</strong></div>
           <button id="exportBtn" class="export-link" type="button">결과 CSV 저장</button>
         </div>
 
@@ -126,7 +133,11 @@
 
           <article class="chart-panel distribution-panel">
             <div class="panel-heading">
-              <div><h2>Vth distribution</h2><p>방법·기준전류 변경 시 즉시 재계산</p></div>
+              <div><h2 id="distributionTitle">Vth distribution</h2><p id="distributionSubtitle">방법·기준전류 변경 시 즉시 재계산</p></div>
+              <div class="segmented compact" id="metricControl">
+                <button type="button" data-value="vth" class="active" aria-pressed="true">Vth</button>
+                <button type="button" data-value="ioff" aria-pressed="false">Ioff</button>
+              </div>
             </div>
             <div id="distributionChart" class="plot" role="img" aria-label="Vth 분포 그래프"></div>
           </article>
@@ -142,7 +153,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Device</th><th>Type</th><th>Vth</th><th>Method</th><th>Fit R²</th><th>Points</th><th>Spec</th></tr></thead>
+              <thead><tr><th>Device</th><th>Type</th><th>Vth</th><th>Ioff</th><th>Method</th><th>Fit R²</th><th>Points</th><th>Spec</th></tr></thead>
               <tbody id="resultsBody"></tbody>
             </table>
           </div>
@@ -154,6 +165,7 @@
             <section><h3>CSV 형식</h3><p>필수 열은 <code>device_id,type,Vg,Id</code>입니다. type은 NMOS/PMOS, Id는 부호가 있거나 절댓값이어도 됩니다. 선택 열 <code>Vd,W_um,L_um</code>을 지원합니다.</p></section>
             <section><h3>Constant current</h3><p>|Id|가 설정한 기준전류를 지나는 Vg를 log-current 공간에서 선형 보간합니다. 동일 기하·동일 기준전류에서 소자 간 산포를 비교할 때 유용합니다.</p></section>
             <section><h3>외삽법</h3><p>√|Id|법은 포화영역을 전제로 합니다. 접촉저항, 히스테리시스, sweep 방향과 Vd가 결과를 바꿀 수 있으므로 낮은 Vd 선형영역 데이터에는 적용하지 마세요.</p></section>
+            <section><h3>Ioff 정의</h3><p>화면의 Ioff는 사용자가 지정한 gate voltage에서 log|Id|를 보간한 값입니다. 단순 최솟값이 아니며, Vd·sweep 방향·측정 noise floor를 함께 기록해야 비교 가능합니다.</p></section>
             <section><h3>판정 경계</h3><p>이 도구의 예제는 합성 데이터이며 계측기 검증을 대신하지 않습니다. 실제 공정 판정 전 golden device와 사내 기준식으로 교차검증하세요.</p></section>
           </div>
           <p class="references">참고: <a href="https://ieeexplore.ieee.org/ielaam/6245494/8015129/7968270-aam.pdf" target="_blank" rel="noreferrer">IEEE · linear extrapolation discussion</a> · <a href="https://ieeexplore.ieee.org/ielaam/16/9385809/9361638-aam.pdf" target="_blank" rel="noreferrer">IEEE · constant-current device statistics</a></p>

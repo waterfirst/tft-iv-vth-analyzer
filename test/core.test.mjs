@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generateExamples, groupCurves, extractVth, parseCSV, summarize } from '../core.mjs';
+import { generateExamples, groupCurves, extractVth, extractIoff, parseCSV, summarize } from '../core.mjs';
 
 test('generates 100 NMOS and 100 PMOS curves deterministically', () => {
   const a = generateExamples();
@@ -52,6 +52,17 @@ test('rejects low-quality sqrt extrapolation', () => {
   const rows = sequence.map((value, i) => ({ device_id: 'NOISY', type: 'NMOS', Vg: i, Id: value * 1e-7 }));
   const result = extractVth(groupCurves(rows)[0], { method: 'sqrt' });
   assert.equal(result.ok, false);
+});
+
+test('extracts Ioff at a specified gate voltage in log-current space', () => {
+  const curve = groupCurves([
+    { device_id: 'N', type: 'NMOS', Vg: -1, Id: 1e-14 },
+    { device_id: 'N', type: 'NMOS', Vg: 1, Id: 1e-10 }
+  ])[0];
+  const result = extractIoff(curve, 0);
+  assert.equal(result.ok, true);
+  assert.ok(Math.abs(Math.log10(result.current) + 12) < 1e-12);
+  assert.equal(extractIoff(curve, 2).ok, false);
 });
 
 test('summarizes distribution', () => {
