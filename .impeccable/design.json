@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-11T16:45:00+09:00",
+  "title": "Design System: TFT I–V / Vth Analyzer",
+  "extensions": {
+    "colorMeta": {
+      "ink-blue": { "role": "primary", "displayName": "Ink Blue", "canonical": "#0b1f35", "tonalRamp": ["oklch(15% 0.045 250)", "oklch(25% 0.045 250)", "oklch(35% 0.04 250)", "oklch(48% 0.035 250)", "oklch(62% 0.03 250)", "oklch(74% 0.022 250)", "oklch(86% 0.014 250)", "oklch(95% 0.006 250)"] },
+      "instrument-muted": { "role": "neutral", "displayName": "Instrument Muted", "canonical": "#5d6d7f", "tonalRamp": ["oklch(15% 0.02 250)", "oklch(25% 0.02 250)", "oklch(35% 0.018 250)", "oklch(48% 0.016 250)", "oklch(62% 0.014 250)", "oklch(74% 0.012 250)", "oklch(86% 0.008 250)", "oklch(95% 0.004 250)"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#d7e0e8", "tonalRamp": ["oklch(15% 0.012 240)", "oklch(25% 0.012 240)", "oklch(35% 0.011 240)", "oklch(48% 0.01 240)", "oklch(62% 0.009 240)", "oklch(74% 0.008 240)", "oklch(86% 0.007 240)", "oklch(95% 0.004 240)"] },
+      "bench-paper": { "role": "neutral", "displayName": "Bench Paper", "canonical": "#f4f7f9", "tonalRamp": ["oklch(15% 0.008 240)", "oklch(25% 0.008 240)", "oklch(35% 0.007 240)", "oklch(48% 0.007 240)", "oklch(62% 0.006 240)", "oklch(74% 0.005 240)", "oklch(86% 0.004 240)", "oklch(95% 0.003 240)"] },
+      "surface-white": { "role": "neutral", "displayName": "Surface White", "canonical": "#ffffff", "tonalRamp": ["oklch(15% 0 0)", "oklch(25% 0 0)", "oklch(35% 0 0)", "oklch(48% 0 0)", "oklch(62% 0 0)", "oklch(74% 0 0)", "oklch(86% 0 0)", "oklch(95% 0 0)"] },
+      "nmos-cyan": { "role": "primary", "displayName": "Phosphor NMOS Cyan", "canonical": "#087f8c", "tonalRamp": ["oklch(15% 0.08 195)", "oklch(25% 0.1 195)", "oklch(35% 0.11 195)", "oklch(48% 0.12 195)", "oklch(62% 0.11 195)", "oklch(74% 0.09 195)", "oklch(86% 0.055 195)", "oklch(95% 0.022 195)"] },
+      "nmos-soft": { "role": "primary", "displayName": "NMOS Soft", "canonical": "#d8f1f2", "tonalRamp": ["oklch(15% 0.035 195)", "oklch(25% 0.04 195)", "oklch(35% 0.045 195)", "oklch(48% 0.05 195)", "oklch(62% 0.045 195)", "oklch(74% 0.038 195)", "oklch(86% 0.028 195)", "oklch(95% 0.012 195)"] },
+      "pmos-magenta": { "role": "secondary", "displayName": "PMOS Magenta", "canonical": "#b63d72", "tonalRamp": ["oklch(15% 0.09 350)", "oklch(25% 0.12 350)", "oklch(35% 0.15 350)", "oklch(48% 0.18 350)", "oklch(62% 0.17 350)", "oklch(74% 0.13 350)", "oklch(86% 0.075 350)", "oklch(95% 0.03 350)"] },
+      "pmos-soft": { "role": "secondary", "displayName": "PMOS Soft", "canonical": "#f9dce8", "tonalRamp": ["oklch(15% 0.04 350)", "oklch(25% 0.05 350)", "oklch(35% 0.06 350)", "oklch(48% 0.07 350)", "oklch(62% 0.065 350)", "oklch(74% 0.052 350)", "oklch(86% 0.035 350)", "oklch(95% 0.014 350)"] },
+      "pass-green": { "role": "tertiary", "displayName": "Pass Green", "canonical": "#16724b", "tonalRamp": ["oklch(15% 0.07 155)", "oklch(25% 0.09 155)", "oklch(35% 0.11 155)", "oklch(48% 0.12 155)", "oklch(62% 0.1 155)", "oklch(74% 0.075 155)", "oklch(86% 0.045 155)", "oklch(95% 0.018 155)"] },
+      "fail-red": { "role": "tertiary", "displayName": "Fail Red", "canonical": "#b62932", "tonalRamp": ["oklch(15% 0.09 25)", "oklch(25% 0.12 25)", "oklch(35% 0.15 25)", "oklch(48% 0.18 25)", "oklch(62% 0.16 25)", "oklch(74% 0.12 25)", "oklch(86% 0.07 25)", "oklch(95% 0.025 25)"] },
+      "action-cyan": { "role": "primary", "displayName": "Action Cyan", "canonical": "#63d8da", "tonalRamp": ["oklch(15% 0.07 195)", "oklch(25% 0.09 195)", "oklch(35% 0.11 195)", "oklch(48% 0.13 195)", "oklch(62% 0.12 195)", "oklch(74% 0.1 195)", "oklch(86% 0.06 195)", "oklch(95% 0.025 195)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Analytical Proposition", "purpose": "The single page-level statement." },
+      "headline": { "displayName": "Metric Headline", "purpose": "Aggregate Vth, sigma, yield, and fit values." },
+      "title": { "displayName": "Panel Title", "purpose": "Chart, ledger, and section headings." },
+      "body": { "displayName": "Instrument Body", "purpose": "Operational copy, explanations, and caveats." },
+      "label": { "displayName": "Instrument Label", "purpose": "Metadata, field legends, table headers, and chips." },
+      "mono": { "displayName": "Measurement Mono", "purpose": "Editable criteria, units, and code-like data." }
+    },
+    "shadows": [
+      { "name": "surface-ambient", "value": "0 16px 35px rgba(16, 38, 58, .08)", "purpose": "Soft separation of work surfaces from bench paper." },
+      { "name": "sticky-chrome", "value": "0 8px 28px rgba(4, 20, 36, .22)", "purpose": "Downward depth under the sticky top bar." },
+      { "name": "selected-control", "value": "0 2px 8px rgba(17, 40, 60, .1)", "purpose": "Local lift for the selected segmented option." },
+      { "name": "transient-toast", "value": "0 14px 40px rgba(0,0,0,.25)", "purpose": "Strong transient feedback above the workbench." }
+    ],
+    "motion": [
+      { "name": "control-state", "value": "180ms ease", "purpose": "Button color and one-pixel hover lift; drop-zone border and fill changes." },
+      { "name": "row-state", "value": "150ms ease", "purpose": "Ledger hover and selection background." },
+      { "name": "toast-entry", "value": "200ms ease", "purpose": "Toast opacity and 16px vertical settle." },
+      { "name": "reduced-motion", "value": "none", "purpose": "All transitions are removed when reduced motion is requested." }
+    ],
+    "breakpoints": [
+      { "name": "analysis-stack", "value": "1120px" },
+      { "name": "mobile-flow", "value": "760px" },
+      { "name": "minimum-canvas", "value": "320px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Import Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The persistent high-emphasis action for loading local I–V data.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">I–V 불러오기</button>",
+      "css": ".ds-btn-primary { min-height: 40px; padding: 0 15px; border: 0; border-radius: 10px; color: var(--ink); background: #63d8da; font: 750 13px 'Pretendard Variable', Pretendard, sans-serif; transition: background .18s ease, transform .18s ease; cursor: pointer; } .ds-btn-primary:hover { background: #8ce5e6; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 3px solid rgba(8,127,140,.28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Chrome Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A lower-emphasis utility action designed for ink-blue chrome.",
+      "html": "<div class=\"ds-chrome\"><button class=\"ds-btn-secondary\" type=\"button\">예제 CSV</button></div>",
+      "css": ".ds-chrome { padding: 12px; background: var(--ink); } .ds-btn-secondary { min-height: 40px; padding: 0 15px; border: 1px solid #476078; border-radius: 10px; color: #e6eef5; background: #17324d; font: 750 13px 'Pretendard Variable', Pretendard, sans-serif; transition: background .18s ease, transform .18s ease; cursor: pointer; } .ds-btn-secondary:hover { background: #23425f; transform: translateY(-1px); } .ds-btn-secondary:focus-visible { outline: 3px solid rgba(99,216,218,.55); outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Device Filter",
+      "kind": "nav",
+      "description": "A compact three-way population filter with one physically lifted active option.",
+      "html": "<div class=\"ds-segmented\"><button class=\"ds-segment active\" type=\"button\">NMOS + PMOS</button><button class=\"ds-segment\" type=\"button\">NMOS</button><button class=\"ds-segment\" type=\"button\">PMOS</button></div>",
+      "css": ".ds-segmented { display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; border-radius: 10px; background: #eaf0f4; } .ds-segment { min-height: 34px; padding: 0 7px; border: 0; border-radius: 8px; color: #526579; background: transparent; font: 750 11px 'Pretendard Variable', Pretendard, sans-serif; cursor: pointer; } .ds-segment.active { color: var(--ink); background: white; box-shadow: 0 2px 8px rgba(17,40,60,.1); } .ds-segment:focus-visible { outline: 3px solid rgba(8,127,140,.28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Measurement Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "A monospaced numeric field with an attached unit cell.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">기준 전류 |Id|</span><span class=\"ds-input-unit\"><input value=\"1e-8\" inputmode=\"decimal\"><span>A</span></span></label>",
+      "css": ".ds-field { display: grid; gap: 8px; color: #354b60; font: 800 11px 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-input-unit { display: grid; grid-template-columns: 1fr auto; overflow: hidden; border: 1px solid #b9c7d2; border-radius: 9px; background: white; } .ds-input-unit:focus-within { border-color: var(--nmos); box-shadow: 0 0 0 3px rgba(8,127,140,.1); } .ds-input-unit input { min-width: 0; height: 38px; padding: 0 10px; border: 0; outline: 0; color: var(--ink); background: transparent; font: 400 12px ui-monospace, SFMono-Regular, Consolas, monospace; } .ds-input-unit > span { padding: 0 10px; display: grid; place-items: center; color: var(--muted); background: #edf2f5; font-size: 10px; }"
+    },
+    {
+      "name": "Analysis Surface",
+      "kind": "card",
+      "refersTo": "surface-card",
+      "description": "The canonical white work surface for charts, controls, ledger, and notes.",
+      "html": "<article class=\"ds-card\"><header><h3>Transfer characteristics</h3><p>각 선은 한 개 TFT · 선택 행은 굵게 표시</p></header><div class=\"ds-card-body\">Analytical content</div></article>",
+      "css": ".ds-card { overflow: hidden; color: var(--ink); background: var(--surface); border-radius: 14px; box-shadow: 0 16px 35px rgba(16,38,58,.08); font-family: 'Pretendard Variable', Pretendard, sans-serif; } .ds-card header { padding: 17px 18px 12px; border-bottom: 1px solid #e7edf1; } .ds-card h3 { margin: 0; font-size: 15px; letter-spacing: -.01em; } .ds-card p { margin: 5px 0 0; color: var(--muted); font-size: 11px; } .ds-card-body { min-height: 120px; padding: 18px; color: var(--muted); }"
+    },
+    {
+      "name": "Device Type Chips",
+      "kind": "chip",
+      "description": "The persistent cyan/magenta polarity labels used in the extraction ledger.",
+      "html": "<div class=\"ds-chip-row\"><span class=\"ds-chip ds-chip-nmos\">NMOS</span><span class=\"ds-chip ds-chip-pmos\">PMOS</span></div>",
+      "css": ".ds-chip-row { display: flex; gap: 8px; } .ds-chip { display: inline-flex; padding: 3px 7px; border-radius: 6px; font: 800 10px 'Pretendard Variable', Pretendard, sans-serif; } .ds-chip-nmos { color: #075c66; background: var(--nmos-soft); } .ds-chip-pmos { color: #87284f; background: var(--pmos-soft); }"
+    },
+    {
+      "name": "Aggregate Status Strip",
+      "kind": "custom",
+      "description": "A continuous dark instrument readout that summarizes population evidence without detached cards.",
+      "html": "<section class=\"ds-status\"><div><span>평균 Vth</span><strong>N 2.55 · P -2.78 V</strong></div><div><span>규격 내</span><strong>100.0%</strong></div><button type=\"button\">결과 CSV 저장</button></section>",
+      "css": ".ds-status { min-height: 76px; display: grid; grid-template-columns: 1fr 1fr auto; overflow: hidden; color: white; background: var(--ink); border-radius: 14px; box-shadow: 0 16px 35px rgba(16,38,58,.08); font-family: 'Pretendard Variable', Pretendard, sans-serif; } .ds-status > div { padding: 14px 18px; border-right: 1px solid #294158; } .ds-status span { display: block; margin-bottom: 6px; color: #aebfce; font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; } .ds-status strong { font-size: 20px; letter-spacing: -.02em; } .ds-status button { padding: 0 18px; border: 0; color: #76dee0; background: #142c43; font-weight: 800; cursor: pointer; } .ds-status button:hover { background: #1b3a56; } .ds-status button:focus-visible { outline: 3px solid rgba(99,216,218,.55); outline-offset: -5px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Probe-Station Workbench",
+    "overview": "This is a bright, compact engineering instrument rather than a dashboard of detached metric cards. Ink-blue structure anchors a paper-gray workbench; phosphor cyan and magenta make NMOS and PMOS populations legible without turning the screen into decoration.\n\nThe system prioritizes scanability, traceability, and defensible decisions. Dense controls remain calm through a tight type ramp, repeated 18px rhythm, continuous chart-and-ledger surfaces, and color that is reserved for device polarity, state, and action.",
+    "keyCharacteristics": ["Bright laboratory workbench with ink-blue instrument structure.", "Dense but ordered Operate-mode hierarchy.", "Cyan NMOS and magenta PMOS as a persistent analytic pairing.", "Rounded white surfaces with restrained ambient lift.", "Monospaced measurement entry and tabular numeric output."],
+    "rules": [
+      { "name": "The Two-Channel Rule", "body": "Cyan denotes NMOS or active interaction; magenta denotes PMOS. Do not swap or reuse this pair for unrelated categories.", "section": "colors" },
+      { "name": "The Ink Structure Rule", "body": "Ink blue is structural and informational, not a general-purpose filled-card color; use it for app chrome, aggregate status, and transient feedback.", "section": "colors" },
+      { "name": "The Instrument Hierarchy Rule", "body": "Use only one display statement; everything inside the workbench steps down to title, body, label, or mono roles.", "section": "typography" },
+      { "name": "The Continuous Evidence Rule", "body": "Keep summary, plots, and ledger in one reading path; do not fragment them into independent dashboard tiles.", "section": "layout" },
+      { "name": "The Ambient-Only Rule", "body": "Shadows clarify surface level and interaction state; they never become decorative hard offsets.", "section": "elevation" }
+    ],
+    "dos": ["Do preserve the cyan-NMOS and magenta-PMOS mapping across curves, chips, annotations, and filters.", "Do keep extraction method, fit state, thresholds, and caveats visible near the analytical evidence.", "Do use the repeated 18px rhythm for workbench gaps and primary surface padding.", "Do retain strong keyboard focus and the reduced-motion override."],
+    "donts": ["Don't split aggregate evidence into a field of detached metric cards.", "Don't use PMOS magenta as a generic accent or action color.", "Don't add decorative gradients, hard offset shadows, or ornamental display type to the laboratory workbench.", "Don't hide failure, no-fit, method, or source provenance behind color alone."]
+  }
+}

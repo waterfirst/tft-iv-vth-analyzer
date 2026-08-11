@@ -1,0 +1,13 @@
+{
+  "name": "tft-iv-vth-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/core.test.mjs",
+    "test:e2e": "node test/e2e.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
