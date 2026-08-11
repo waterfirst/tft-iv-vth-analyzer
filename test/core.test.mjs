@@ -13,18 +13,23 @@ test('generates 100 NMOS and 100 PMOS curves deterministically', () => {
   assert.deepEqual(a.slice(0, 20), b.slice(0, 20));
 });
 
-test('extracts signed constant-current Vth for both polarities', () => {
+test('extracts signed Vth at |Id| = 1e-10 A for both polarities', () => {
   const curves = groupCurves(generateExamples());
-  const n = extractVth(curves.find(c => c.type === 'NMOS'), { method: 'constant', currentTarget: 1e-8 });
-  const p = extractVth(curves.find(c => c.type === 'PMOS'), { method: 'constant', currentTarget: 1e-8 });
+  const n = extractVth(curves.find(c => c.type === 'NMOS'), { method: 'constant' });
+  const p = extractVth(curves.find(c => c.type === 'PMOS'), { method: 'constant' });
   assert.equal(n.ok, true); assert.equal(p.ok, true);
   assert.ok(n.vth > 0); assert.ok(p.vth < 0);
+  assert.equal(n.target, 1e-10); assert.equal(p.target, 1e-10);
 });
 
-test('sqrt extrapolation returns high quality fits on synthetic saturation curves', () => {
-  const results = groupCurves(generateExamples()).map(c => extractVth(c, { method: 'sqrt' }));
-  assert.ok(results.every(r => r.ok));
-  assert.ok(results.filter(r => r.r2 > 0.98).length > 190);
+test('returns the Vg point where |d|Id|/dVg| is maximum', () => {
+  const curve = groupCurves([0, 1, 10, 12, 13].map((current, Vg) => ({
+    device_id: 'SLOPE', type: 'NMOS', Vg, Id: Math.max(current, 1e-14)
+  })))[0];
+  const result = extractVth(curve, { method: 'maxslope' });
+  assert.equal(result.ok, true);
+  assert.equal(result.vth, 2);
+  assert.ok(result.peakSlope > 5);
 });
 
 test('parses aliases and infers PMOS from filename', () => {
@@ -37,21 +42,6 @@ test('skips blank Vg or Id instead of coercing blanks to zero', () => {
   const parsed = parseCSV('device_id,type,Vg,Id\nA,NMOS,,1e-9\nA,NMOS,2,\nA,NMOS,3,1e-7', 'nmos.csv');
   assert.equal(parsed.rows.length, 1);
   assert.deepEqual(parsed.warnings, [2, 3]);
-});
-
-test('fails geometry-normalized extraction when W/L is missing', () => {
-  const data = 'device_id,type,Vg,Id\nA,NMOS,0,1e-12\nA,NMOS,1,1e-10\nA,NMOS,2,1e-8\nA,NMOS,3,1e-6\nA,NMOS,4,1e-5';
-  const curve = groupCurves(parseCSV(data, 'nmos.csv').rows)[0];
-  const result = extractVth(curve, { method: 'constant', currentTarget: 1e-8, normalizeGeometry: true });
-  assert.equal(result.ok, false);
-  assert.equal(result.reason, 'W/L 누락');
-});
-
-test('rejects low-quality sqrt extrapolation', () => {
-  const sequence = [1, 9, 2, 8, 3, 7, 4, 6, 5, 8, 2, 9, 3];
-  const rows = sequence.map((value, i) => ({ device_id: 'NOISY', type: 'NMOS', Vg: i, Id: value * 1e-7 }));
-  const result = extractVth(groupCurves(rows)[0], { method: 'sqrt' });
-  assert.equal(result.ok, false);
 });
 
 test('extracts Ioff at a specified gate voltage in log-current space', () => {

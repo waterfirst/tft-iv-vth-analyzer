@@ -4,11 +4,11 @@ Browser-only TFT transfer-curve analysis for NMOS and PMOS populations.
 
 ## Features
 
-- Deterministic synthetic dataset: 100 NMOS + 100 PMOS, 81 points per device
+- Deterministic synthetic dataset: 100 NMOS + 100 PMOS, 81 points per device, with a mobility-degradation turnover for maximum-slope demonstration
 - Multi-file CSV import; data stays in the browser
 - Log/linear transfer curves and Vth distribution
 - Configurable Ioff extraction at a specified Vg, on-curve marker, and log-current distribution
-- Constant-current and sqrt(|Id|) saturation-regime extraction
+- Two selectable Vth definitions: maximum `|d|Id|/dVg|` and `|Id| = 10^-10 A`
 - Spec yield, fit status, searchable device ledger, and CSV export
 - Responsive static site for GitHub Pages
 
@@ -37,4 +37,4 @@ node --test test/core.test.mjs
 
 ## Scientific caution
 
-Vth is method-dependent. Constant-current results depend on the chosen current and normalization; sqrt-current extrapolation assumes saturation behavior. Validate against the lab's measurement condition and golden-device method before production disposition.
+Vth is method-dependent. The maximum-slope definition is sensitive to measurement noise and Vg spacing; the fixed-current definition assumes the same current convention across devices. Validate against the lab's measurement conditions and golden-device method before production disposition.

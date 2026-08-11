@@ -14,6 +14,8 @@ const assert = require('node:assert/strict');
   assert.equal(await desktop.locator('#resultsBody tr').count(), 200);
   assert.match(await desktop.locator('#meanVth').textContent(), /N .* · P .* V/);
   assert.match(await desktop.locator('#ioffValue').textContent(), /e-\d+ A/);
+  assert.equal(await desktop.locator('input[name="method"]').count(), 2);
+  assert.equal(await desktop.locator('input[name="method"][value="maxslope"]').isChecked(), true);
   await desktop.locator('#metricControl button[data-value="ioff"]').click();
   await desktop.waitForFunction(() => document.querySelector('#distributionTitle')?.textContent === 'Ioff distribution');
   await desktop.locator('#metricControl button[data-value="vth"]').click();
@@ -21,8 +23,11 @@ const assert = require('node:assert/strict');
 
   await desktop.locator('#typeControl button[data-value="pmos"]').click();
   await desktop.waitForFunction(() => document.querySelector('#meanVth')?.textContent.includes('-'));
-  await desktop.locator('input[name="method"][value="sqrt"]').check();
+  const slopeVth = await desktop.locator('#meanVth').textContent();
+  await desktop.locator('input[name="method"][value="constant"]').check();
   await desktop.waitForFunction(() => document.querySelector('#fitRate')?.textContent === '100/100');
+  const constantVth = await desktop.locator('#meanVth').textContent();
+  assert.notEqual(slopeVth, constantVth);
   assert.equal(await desktop.locator('#resultsBody tr').count(), 100);
 
   const csv = [

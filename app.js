@@ -6,7 +6,7 @@ const state = {
   results: [],
   source: 'SYNTHETIC · SEED 20260811',
   type: 'both',
-  method: 'constant',
+  method: 'maxslope',
   metric: 'vth',
   scale: 'log',
   selected: null,
@@ -15,7 +15,7 @@ const state = {
 
 const $ = id => document.getElementById(id);
 const palette = { NMOS: '#087f8c', PMOS: '#b63d72' };
-const methodLabel = { constant: 'Constant current', sqrt: '√|Id| extrapolation' };
+const methodLabel = { maxslope: 'Max |dId/dVg|', constant: '|Id| = 1e-10 A' };
 let toastTimer;
 
 function toast(message, error = false) {
@@ -27,11 +27,7 @@ function toast(message, error = false) {
 }
 
 function options() {
-  return {
-    method: state.method,
-    currentTarget: Number($('currentTarget').value),
-    normalizeGeometry: $('normalizeGeometry').checked
-  };
+  return { method: state.method };
 }
 
 function limitsFor(type) {
@@ -211,14 +207,13 @@ function renderTable() {
     .filter(r => !query || r.curve.id.toLowerCase().includes(query));
   $('resultsBody').innerHTML = rows.map(r => {
     const specClass = r.spec === null ? 'na' : r.spec ? 'pass' : 'fail';
-    const specText = r.spec === null ? 'NO FIT' : r.spec ? 'PASS' : 'OUT';
+    const specText = r.spec === null ? 'NO RESULT' : r.spec ? 'PASS' : 'OUT';
     return `<tr data-key="${escapeHTML(r.curve.key)}" tabindex="0" aria-selected="${r.curve.key === state.selected}" class="${r.curve.key === state.selected ? 'selected' : ''}">
       <td><strong>${escapeHTML(r.curve.id)}</strong></td>
       <td><span class="type-chip ${r.curve.type.toLowerCase()}">${r.curve.type}</span></td>
       <td>${r.ok ? `${r.vth.toFixed(4)} V` : escapeHTML(r.reason)}</td>
       <td>${r.ioff.ok ? formatCurrent(r.ioff.current) : escapeHTML(r.ioff.reason)}</td>
       <td>${methodLabel[state.method]}</td>
-      <td>${Number.isFinite(r.r2) ? r.r2.toFixed(4) : '—'}</td>
       <td>${r.curve.rows.length}</td>
       <td><span class="spec-chip ${specClass}">${specText}</span></td>
     </tr>`;
@@ -262,10 +257,11 @@ function download(name, content, mime = 'text/csv;charset=utf-8') {
 }
 
 function exportResults() {
-  const headers = ['device_id', 'type', 'vth_v', 'ioff_a', 'ioff_vg_v', 'method', 'fit_r2', 'fit_status', 'spec_status', 'point_count', 'source'];
+  const headers = ['device_id', 'type', 'vth_v', 'ioff_a', 'ioff_vg_v', 'method', 'criterion', 'extraction_status', 'spec_status', 'point_count', 'source'];
   const lines = [headers.join(','), ...state.results.map(r => [
-    r.curve.id, r.curve.type, r.ok ? r.vth.toFixed(8) : '', r.ioff.ok ? r.ioff.current.toExponential(8) : '', r.ioff.vg ?? '', methodLabel[state.method], Number.isFinite(r.r2) ? r.r2.toFixed(8) : '',
-    r.ok ? 'OK' : r.reason, r.spec === null ? 'NO_FIT' : r.spec ? 'PASS' : 'OUT', r.curve.rows.length, state.source
+    r.curve.id, r.curve.type, r.ok ? r.vth.toFixed(8) : '', r.ioff.ok ? r.ioff.current.toExponential(8) : '', r.ioff.vg ?? '', methodLabel[state.method],
+    state.method === 'maxslope' && Number.isFinite(r.peakSlope) ? `peak_slope=${r.peakSlope.toExponential(8)} A/V` : '|Id|=1e-10 A',
+    r.ok ? 'OK' : r.reason, r.spec === null ? 'NO_RESULT' : r.spec ? 'PASS' : 'OUT', r.curve.rows.length, state.source
   ].map(value => `"${String(value).replaceAll('"', '""')}"`).join(','))];
   download(`tft_vth_results_${new Date().toISOString().slice(0, 10)}.csv`, lines.join('\n'));
   toast('Vth 결과 CSV를 저장했습니다.');
@@ -301,11 +297,9 @@ function bind() {
   document.querySelectorAll('input[name="method"]').forEach(input => input.addEventListener('change', () => {
     state.method = input.value;
     document.querySelectorAll('.method-option').forEach(label => label.classList.toggle('active', label.contains(input)));
-    $('currentField').hidden = state.method !== 'constant';
-    $('normalizeGeometry').closest('label').hidden = state.method !== 'constant';
     recalculate();
   }));
-  ['currentTarget', 'offGateVoltage', 'normalizeGeometry', 'nmosMin', 'nmosMax', 'pmosMin', 'pmosMax'].forEach(id => $(id).addEventListener('change', recalculate));
+  ['offGateVoltage', 'nmosMin', 'nmosMax', 'pmosMin', 'pmosMax'].forEach(id => $(id).addEventListener('change', recalculate));
   $('searchInput').addEventListener('input', event => { state.search = event.target.value; renderTable(); });
   $('resetBtn').addEventListener('click', () => {
     state.rows = generateExamples(); state.source = 'SYNTHETIC · SEED 20260811'; state.selected = null; recalculate(); toast('NMOS 100개 · PMOS 100개 합성 예제로 초기화했습니다.');

@@ -42,7 +42,9 @@ export function generateExamples(countPerType = 100, seed = 20260811) {
       const vg = polarity * orientedVg;
       const overdrive = orientedVg - vthMag;
       const sub = ioff * Math.pow(10, Math.min(overdrive / ss, 4.2));
-      const above = overdrive > 0 ? gain * overdrive * overdrive : 0;
+      const mobilityDegradation = 0.55;
+      const effectiveOverdrive = overdrive > 0 ? overdrive / (1 + mobilityDegradation * overdrive) : 0;
+      const above = gain * effectiveOverdrive * effectiveOverdrive;
       const noise = Math.exp(normal(random) * (overdrive > 0 ? 0.018 : 0.055));
       const magnitude = Math.max(1e-14, (sub + above) * noise);
       rows.push({
@@ -143,24 +145,6 @@ export function groupCurves(rows) {
   return [...groups.values()];
 }
 
-function linearFit(xs, ys) {
-  const n = xs.length;
-  if (n < 3) return null;
-  const sx = xs.reduce((a, b) => a + b, 0);
-  const sy = ys.reduce((a, b) => a + b, 0);
-  const sxx = xs.reduce((a, x) => a + x * x, 0);
-  const sxy = xs.reduce((a, x, i) => a + x * ys[i], 0);
-  const den = n * sxx - sx * sx;
-  if (Math.abs(den) < 1e-15) return null;
-  const m = (n * sxy - sx * sy) / den;
-  const b = (sy - m * sx) / n;
-  const mean = sy / n;
-  const ssTot = ys.reduce((a, y) => a + (y - mean) ** 2, 0);
-  const ssRes = ys.reduce((a, y, i) => a + (y - (m * xs[i] + b)) ** 2, 0);
-  const r2 = ssTot > 0 ? 1 - ssRes / ssTot : 1;
-  return { m, b, r2 };
-}
-
 function orientedPoints(curve) {
   const sign = curve.type === 'PMOS' ? -1 : 1;
   return curve.rows.map(row => ({
@@ -171,21 +155,34 @@ function orientedPoints(curve) {
 }
 
 export function extractVth(curve, options = {}) {
-  const method = options.method || 'constant';
+  const method = options.method || 'maxslope';
   const sign = curve.type === 'PMOS' ? -1 : 1;
   const points = orientedPoints(curve);
   if (points.length < 5) return { ok: false, reason: '측정점 부족', vth: null, r2: null };
 
-  if (method === 'constant') {
-    const first = curve.rows[0];
-    let target = Number(options.currentTarget || 1e-8);
-    if (options.normalizeGeometry) {
-      if (!(Number(first.W_um) > 0) || !(Number(first.L_um) > 0)) {
-        return { ok: false, reason: 'W/L 누락', vth: null, r2: null };
-      }
-      target *= first.W_um / first.L_um;
+  if (method === 'maxslope') {
+    const derivatives = points.map((point, index) => {
+      if (index === 0 || index === points.length - 1) return -Infinity;
+      const left = points[index - 1];
+      const right = points[index + 1];
+      const deltaVg = right.x - left.x;
+      return deltaVg > 0 ? Math.abs((right.current - left.current) / deltaVg) : -Infinity;
+    });
+    const peak = derivatives.indexOf(Math.max(...derivatives));
+    if (peak < 0 || !Number.isFinite(derivatives[peak])) {
+      return { ok: false, reason: '기울기 계산 실패', vth: null, r2: null };
     }
-    if (!(target > 0)) return { ok: false, reason: '기준전류 오류', vth: null, r2: null };
+    return {
+      ok: true,
+      vth: points[peak].row.Vg,
+      r2: null,
+      peakSlope: derivatives[peak],
+      fitRange: [points[Math.max(0, peak - 1)].row.Vg, points[Math.min(points.length - 1, peak + 1)].row.Vg]
+    };
+  }
+
+  if (method === 'constant') {
+    const target = 1e-10;
     const logTarget = Math.log10(target);
     for (let i = 1; i < points.length; i += 1) {
       const y0 = Math.log10(points[i - 1].current);
@@ -199,32 +196,7 @@ export function extractVth(curve, options = {}) {
     return { ok: false, reason: '기준전류 교차 없음', vth: null, r2: null, target };
   }
 
-  if (method === 'sqrt') {
-    const values = points.map(p => Math.sqrt(p.current));
-    const max = Math.max(...values);
-    const selected = points.map((p, i) => ({ x: p.x, y: values[i] })).filter(p => p.y >= max * 0.25 && p.y <= max * 0.80);
-    if (selected.length < 5) return { ok: false, reason: '√Id 피팅점 부족', vth: null, r2: null };
-    const fit = linearFit(selected.map(p => p.x), selected.map(p => p.y));
-    const intercept = fit ? -fit.b / fit.m : NaN;
-    const insideSweep = Number.isFinite(intercept) && intercept >= points[0].x && intercept <= points.at(-1).x;
-    if (!fit || fit.m <= 0 || fit.r2 < 0.98 || !insideSweep) {
-      return { ok: false, reason: fit && fit.r2 < 0.98 ? 'R² < 0.98' : '√Id 외삽 범위 오류', vth: null, r2: fit?.r2 ?? null };
-    }
-    return { ok: true, vth: sign * intercept, r2: fit.r2, fitRange: [sign * selected[0].x, sign * selected.at(-1).x] };
-  }
-
-  const currents = points.map(p => p.current);
-  const slopes = currents.map((_, i) => {
-    if (i === 0 || i === currents.length - 1) return -Infinity;
-    return (currents[i + 1] - currents[i - 1]) / (points[i + 1].x - points[i - 1].x);
-  });
-  const peak = slopes.indexOf(Math.max(...slopes));
-  const start = Math.max(0, peak - 3);
-  const end = Math.min(points.length, peak + 4);
-  const selected = points.slice(start, end);
-  const fit = linearFit(selected.map(p => p.x), selected.map(p => p.current));
-  if (!fit || fit.m <= 0) return { ok: false, reason: 'gm 선형구간 실패', vth: null, r2: fit?.r2 ?? null };
-  return { ok: true, vth: sign * (-fit.b / fit.m), r2: fit.r2, fitRange: [sign * selected[0].x, sign * selected.at(-1).x] };
+  return { ok: false, reason: '지원하지 않는 Vth 추출법', vth: null, r2: null };
 }
 
 export function extractIoff(curve, gateVoltage = 0) {
